@@ -14,6 +14,115 @@ Behavior-based authentication using keyboard + mouse telemetry.
 - `run_pipeline.sh`: one-command pipeline runner (Linux/macOS shell).
 - `run_pipeline.ps1`: one-command pipeline runner (Windows PowerShell).
 
+## First-Time Clone Setup
+
+## Linux
+
+```bash
+git clone https://github.com/2023abhisheksharma/behavior_auth.git
+cd behavior_auth
+
+sudo apt update
+sudo apt install -y build-essential cmake pkg-config libevdev-dev libzmq3-dev cppzmq-dev python3 python3-venv
+
+python3 -m venv python_engine/venv
+source python_engine/venv/bin/activate
+pip install -r requirements.txt
+
+cmake -S event_engine -B event_engine/build
+cmake --build event_engine/build
+```
+
+## Windows (training/analysis)
+
+```powershell
+git clone https://github.com/2023abhisheksharma/behavior_auth.git
+cd behavior_auth
+
+python -m venv python_engine\venv
+python_engine\venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+```
+
+Then run:
+
+```powershell
+.\run_pipeline.ps1
+```
+
+## Daily Run Sequence
+
+## Linux live capture + scoring
+
+1. Terminal A (publisher):
+
+```bash
+cd /path/to/behavior_auth/event_engine/build
+sudo ./event_engine
+```
+
+2. Terminal B (receiver):
+
+```bash
+cd /path/to/behavior_auth
+source python_engine/venv/bin/activate
+python python_engine/receiver.py
+```
+
+3. After session, retrain models:
+
+```bash
+./run_pipeline.sh
+```
+
+## Windows daily training/analysis
+
+```powershell
+cd C:\path\to\behavior_auth
+python_engine\venv\Scripts\Activate.ps1
+.\run_pipeline.ps1
+```
+
+## Data Collection Checklist (Owner vs Impostor)
+
+## Owner session checklist
+
+- Use default label (`owner`).
+- Collect at least 20 windows before first training.
+- Collect mixed behavior: typing-heavy, mouse-heavy, normal browsing.
+- Keep session lengths varied (short and long sessions).
+- Rerun `./run_pipeline.sh` and confirm context model coverage improves.
+
+## Impostor session checklist
+
+- Set label explicitly before receiver start.
+
+Linux:
+
+```bash
+BEHAVIOR_COLLECTION_LABEL=impostor python python_engine/receiver.py
+```
+
+Windows PowerShell:
+
+```powershell
+$env:BEHAVIOR_COLLECTION_LABEL = "impostor"
+python python_engine\receiver.py
+```
+
+- Record behaviors that differ from owner style:
+	- slower/faster typing rhythm
+	- trackpad-only or very different mouse movement
+	- different pause patterns
+- Keep impostor data in separate labeled sessions.
+- Retrain with `./run_pipeline.sh` and validate score separation using `python_engine/analyze_scores.py`.
+
+If real impostor users are unavailable, generate synthetic negatives for testing only:
+
+```bash
+python python_engine/generate_pseudo_impostor.py
+```
+
 ## Quick Setup
 
 ## Linux (full capture + training)
@@ -206,3 +315,12 @@ git remote set-url origin https://github.com/2023abhisheksharma/behavior_auth.gi
 - If DB resets: it should not reset anymore. Verify `python_engine/behavior_data.db` is being used.
 - If context models are missing: collect more samples for those activities and rerun pipeline.
 - If scores look unstable: increase owner samples and retrain.
+
+## Release Tags
+
+Use semantic version tags for stable checkpoints.
+
+```bash
+git tag -a v0.2.0 -m "Behavior auth stable docs + pipeline + context routing"
+git push origin v0.2.0
+```

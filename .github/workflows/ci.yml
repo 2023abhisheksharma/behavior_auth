@@ -1,0 +1,57 @@
+name: CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  python-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Python syntax check
+        run: python -m compileall python_engine
+
+      - name: Pipeline import smoke test
+        run: |
+          python - <<'PY'
+          import sys
+          sys.path.insert(0, "python_engine")
+          import settings
+          import database
+          import event_processor
+          import sequence_engine
+          import realtime_engine
+          print("python import smoke ok")
+          PY
+
+  event-engine-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install C++ dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake build-essential pkg-config libevdev-dev libzmq3-dev cppzmq-dev
+
+      - name: Configure CMake
+        run: cmake -S event_engine -B event_engine/build
+
+      - name: Build event engine
+        run: cmake --build event_engine/build
