@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.venv/
+venv/
+
+# Build artifacts
+build/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+
+# Runtime data and models
+*.db
+*.pkl
+python_engine/models/
+python_engine/behavior_data.db
+
+# Editor / OS
+.vscode/
+.DS_Store
+Thumbs.db
