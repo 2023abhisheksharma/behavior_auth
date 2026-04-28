@@ -117,7 +117,8 @@ def extract_features():
     std_flight = np.std(flight)
 
     total_time = (dwell.sum() + flight.sum()) / 1_000_000
-    typing_speed = len(dwell) / total_time if total_time > 0 else 0
+    total_time = max(total_time, 0.1)  # Clamp to at least 100ms to avoid infinite speed
+    typing_speed = len(dwell) / total_time
 
     # ---------- SPACE ----------
     mean_space_d = np.mean(space_dwell) if space_dwell else 0
