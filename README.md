@@ -2,131 +2,120 @@
 
 A continuous, behavior-based authentication system using keystroke dynamics and mouse telemetry. 
 
-The system uses a highly optimized C++ engine to capture hardware inputs and publishes them over ZeroMQ to a Python machine-learning receiver. The Python engine extracts behavioral features, stores them in SQLite, and scores them in real-time against user-trained Anomaly Detection models (Isolation Forest).
+The system uses a highly optimized C++ engine to capture low-level Linux hardware inputs and publishes them over ZeroMQ to a Python machine-learning receiver. The Python engine extracts behavioral features, stores them in SQLite, and scores them in real-time against user-trained Anomaly Detection models (Isolation Forest).
 
 ---
 
-## 🧩 WINDOWS SETUP (FULL STEPS FROM ZERO)
+## 🛠️ 1. Installation & Setup (Linux)
 
-### 1. Install Required Software
-
-**1.1 Install Python**
-* Download: [Python](https://www.python.org/downloads/)
-* During install:
-  * ✔ Add to PATH
-  * ✔ Install pip
-* Verify: `python --version`
-
-**1.2 Install Visual Studio (for C++)**
-* Download: [Visual Studio](https://visualstudio.microsoft.com/)
-* Select workload: **Desktop development with C++**
-
-**1.3 Install ZeroMQ (C++ + Python)**
-*C++ side:*
-Use `vcpkg`:
-```cmd
-git clone https://github.com/microsoft/vcpkg
-cd vcpkg
-bootstrap-vcpkg.bat
-vcpkg install zeromq:x64-windows
-vcpkg install cppzmq:x64-windows
-vcpkg integrate install
+### 1.1 Install System Dependencies
+```bash
+sudo apt update
+sudo apt install -y build-essential cmake pkg-config libevdev-dev libzmq3-dev cppzmq-dev python3 python3-venv
 ```
 
-*Python side:*
-```cmd
-pip install pyzmq
+### 1.2 Build the C++ Event Engine
+```bash
+git clone https://github.com/2023abhisheksharma/behavior_auth.git
+cd behavior_auth
+
+mkdir -p event_engine/build
+cd event_engine/build
+cmake ..
+make
+cd ../..
 ```
 
-**1.4 Install Python Libraries**
-```cmd
-pip install numpy scikit-learn joblib matplotlib
-```
-
-**1.5 Install SQLite Tools**
-* Download: [DB Browser for SQLite](https://sqlitebrowser.org/)
-* Used for: Viewing collected data and verifying features.
-
----
-
-## ⚙️ 2. BUILD C++ EVENT ENGINE (WINDOWS)
-
-**Steps:**
-1. Open Visual Studio.
-2. Create a Console Application.
-3. Add your `.cpp` and `.hpp` files (including `EventEngine_Windows.cpp`).
-4. Link ZeroMQ (via vcpkg auto-integration).
-5. Build: `Build → Build Solution`.
-**Output:** `event_engine.exe`
-
----
-
-## ▶️ 3. RUN SYSTEM (ORDER IS IMPORTANT)
-
-### Step 1: Start C++ Event Engine
-```cmd
-event_engine.exe
-```
-*Expected Output:*
-```
-Windows Event Engine (Raw Input) Starting...
-Listening for global Windows input...
-```
-
-### Step 2: Start Python Receiver
-```cmd
+### 1.3 Setup Python Machine Learning Environment
+```bash
 cd python_engine
-python receiver.py
-```
-*Expected Output:*
-```
-Listening...
-```
-
----
-
-## 🧠 4. DATA COLLECTION
-
-**What you do:** Type normally, move the mouse, use the system normally.
-**System will:** → capture events → extract features → store in SQLite
-
----
-
-## 🗄️ 5. VERIFY DATA (IMPORTANT STEP)
-
-1. Open **DB Browser for SQLite**.
-2. Open file: `behavior_data.db`.
-3. Check the `features` table.
-4. You should see: `mean_dwell`, `typing_speed`, `velocity`, etc.
-
----
-
-## 🧠 6. TRAIN & EVALUATE MODELS
-
-**Train Model:**
-```cmd
-python train_iforest.py
-```
-
-**Test Model:**
-```cmd
-python test_iforest.py
-```
-
-**Analyze Scores:**
-```cmd
-python analyze_scores.py
-```
-
-**Evaluate Model (FAR, FRR, EER):**
-```cmd
-python evaluate_model.py
+python3 -m venv venv
+source venv/bin/activate
+pip install -r ../requirements.txt
+cd ..
 ```
 
 ---
 
-## 🔁 FULL PIPELINE ARCHITECTURE
+## 🚀 2. Running the System
 
+You have two choices for running the data collection and inference pipeline: visually in the foreground, or invisibly in the background.
+
+### Option A: Clean Background Service (Recommended)
+We have a fully automated script that launches the C++ tracker and Python ML receiver seamlessly in the background.
+
+1. **Start the service:**
+   ```bash
+   ./start_background.sh
+   ```
+2. **Watch the live AI predictions:**
+   ```bash
+   tail -f /tmp/behavior_python_receiver.log
+   ```
+3. **Stop the service:**
+   ```bash
+   sudo pkill -f event_engine && pkill -f "receiver.py"
+   ```
+
+### Option B: Manual Foreground Terminals (For Debugging)
+Open two separate terminals:
+* **Terminal 1 (Publisher):** `cd event_engine/build && sudo ./event_engine`
+* **Terminal 2 (Receiver):** `cd python_engine && source venv/bin/activate && python receiver.py`
+
+---
+
+## 🧠 3. Training the AI
+
+The AI starts out completely empty and passively learns your habits. You should retrain the system periodically so it gets smarter at recognizing you.
+
+* **Phase 1 (1 Hour):** After 1-2 hours of usage (around 100-200 frames), run the training pipeline to generate the global models.
+* **Phase 2 (End of Day):** After compiling ~500+ frames, retraining will generate Context-Aware Models (specific AIs for when you are typing vs when you are using the mouse).
+
+### How to Train:
+Run the automated pipeline to compile your SQLite data, build the Sklearn models, and verify feature weights:
+
+**Linux:**
+```bash
+./run_pipeline.sh
+```
+
+**Windows:**
+```powershell
+.\run_pipeline.ps1
+```
+
+---
+
+## 🕵️ 4. Importing Impostor Data (For Friends/Teammates)
+
+When you are ready to train Deep Learning classifiers (like LightGBM), you need real data from other humans ("impostors"). Rather than lending them your laptop, they can run this system on theirs!
+
+1. Have your friend clone this repo and run `./start_background.sh` on their Linux machine for a few hours.
+2. Have them send you their `python_engine/behavior_data.db` file.
+3. Save their database file to your machine (e.g., `~/Downloads/friend_db.db`).
+4. Run the remote import tool. It will selectively strip their database IDs, forcefully label all their telemetry as `impostor`, and merge it directly into your live master DB.
+   
+   **Linux:**
+   ```bash
+   cd python_engine
+   source venv/bin/activate
+   python import_impostor_db.py ~/Downloads/friend_db.db
+   ```
+
+   **Windows:**
+   ```powershell
+   cd python_engine
+   .\venv\Scripts\Activate.ps1
+   python import_impostor_db.py C:\Users\Downloads\friend_db.db
+   ```
+
+---
+
+## 🪟 5. Windows Support (Setup & Architecture)
+
+Using the cross-platform capabilities via the `EventEngine_Windows.cpp` implementation, here is the full pipeline and setup for running data analytics or live collection in Windows.
+
+### 5.1 Architecture Pipeline
 ```text
 C++ Raw Input (Windows) / libevdev (Linux)
         ↓
@@ -147,48 +136,61 @@ IsolationForest Model
   Decision Output
 ```
 
+### 5.2 Build Event Engine in Windows
+* Download & install **Visual Studio** (Desktop development with C++).
+* **Install ZeroMQ via vcpkg:**
+  ```cmd
+  git clone https://github.com/microsoft/vcpkg
+  cd vcpkg
+  bootstrap-vcpkg.bat
+  vcpkg install zeromq:x64-windows cppzmq:x64-windows
+  vcpkg integrate install
+  ```
+* Open Visual Studio, create a Console Application, add `.cpp` files, and build the `event_engine.exe`.
+
+### 5.3 Setup ML Environment in Windows
+* Install **Python** and check `Add to PATH`.
+* Open a terminal or PowerShell:
+  ```powershell
+  python -m venv python_engine\venv
+  python_engine\venv\Scripts\Activate.ps1
+  pip install pyzmq numpy scikit-learn joblib matplotlib
+  ```
+
+### 5.4 Running Data Collection & Evaluating
+**Step 1:** Run `event_engine.exe`
+**Step 2:** Start Python Receiver:
+```powershell
+cd python_engine
+python receiver.py
+```
+**Verify:** Check `python_engine/behavior_data.db` via **DB Browser for SQLite** to see your recorded behavioral data.
+**Test & Train:**
+```powershell
+python train_iforest.py
+python evaluate_model.py
+```
+
 ---
 
-## 🐧 LINUX SETUP (QUICK START)
+## ⚙️ Systemd Persistent Daemon (Advanced Linux)
+To make the system launch globally on boot without needing to open a terminal:
+1. `sudo nano /etc/systemd/system/behavior_auth.service`
+2. Configure it:
+   ```ini
+   [Unit]
+   Description=Behavior Authentication Security Service
+   After=network.target
 
-If you are running this natively on Linux (like Arch/Ubuntu):
+   [Service]
+   Type=simple
+   User=root
+   WorkingDirectory=/path/to/behavior_auth
+   ExecStart=/path/to/behavior_auth/start_background.sh
+   Restart=on-failure
+   RestartSec=5
 
-**1. Install Dependencies:**
-```bash
-sudo apt update
-sudo apt install -y build-essential cmake pkg-config libevdev-dev libzmq3-dev cppzmq-dev python3 python3-venv
-```
-
-**2. Build C++ Engine:**
-```bash
-mkdir -p event_engine/build && cd event_engine/build
-cmake ..
-make
-```
-
-**3. Setup Python Engine & Run Background Service:**
-```bash
-cd ../../python_engine
-python -m venv venv
-source venv/bin/activate
-pip install -r ../requirements.txt
-cd ..
-./start_background.sh
-```
-
----
-
-## ⚠️ COMMON ISSUES
-
-❌ **Mouse data = 0**
-* **Cause:** Raw Input not capturing / Wrong device usage.
-* **Fix:** Ensure `WM_INPUT` correctly handled, verify `dx/dy` values.
-
-❌ **Database resets**
-* **Cause:** Path mismatch.
-* **Fix:** Use absolute DB paths everywhere.
-
-❌ **Model mismatch**
-* **Cause:** Feature count mismatch.
-* **Fix:** Train again after feature changes.
-
+   [Install]
+   WantedBy=multi-user.target
+   ```
+3. Enable it: `sudo systemctl daemon-reload && sudo systemctl enable behavior_auth.service && sudo systemctl start behavior_auth.service`
