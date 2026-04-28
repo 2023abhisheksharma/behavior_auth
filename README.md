@@ -201,6 +201,69 @@ source python_engine/venv/bin/activate
 python python_engine/receiver.py
 ```
 
+## Running as a Background Service (No Terminal)
+
+If you want the system to run seamlessly in the background without keeping terminals open, follow these steps.
+
+### Linux (systemd Service)
+
+You can configure the system to run locally without terminals using a systemd daemon.
+
+1. Ensure the background script `start_background.sh` is executable:
+```bash
+chmod +x /path/to/behavior_auth/start_background.sh
+```
+
+2. Create a service file:
+```bash
+sudo nano /etc/systemd/system/behavior_auth.service
+```
+
+3. Paste the following configuration (update `/path/to/behavior_auth` to your actual absolute path):
+```ini
+[Unit]
+Description=Behavior Authentication Security Service
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/path/to/behavior_auth
+ExecStart=/path/to/behavior_auth/start_background.sh
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+```
+
+4. Enable and start the service:
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable behavior_auth.service
+sudo systemctl start behavior_auth.service
+```
+
+The system will now automatically launch globally in the background every time your Linux machine boots up. You can track ongoing AI logs at `/tmp/behavior_python_receiver.log`.
+
+### Windows (Task Scheduler)
+
+*Note: Since the C++ `event_engine` tracking low-level kernel strokes is Linux-only, this configures only the Python receiver engine to run silently in the background.*
+
+1. Open **Task Scheduler** from the Windows Start Menu.
+2. Click **Create Task...** on the right-hand panel.
+3. In the **General** tab:
+   - Name: `Behavior Auth Service`
+   - Select **Run whether user is logged on or not**.
+   - Check **Run with highest privileges**.
+4. In the **Triggers** tab:
+   - Click **New...** and select **At log on** (or **At startup**).
+5. In the **Actions** tab:
+   - Click **New...** and select **Start a program**.
+   - Program/script: `powershell.exe`
+   - Add arguments: `-WindowStyle Hidden -ExecutionPolicy Bypass -Command "cd C:\path\to\behavior_auth\python_engine; .\venv\Scripts\Activate.ps1; python receiver.py"`
+6. Save the task. The authentication listener will now run completely invisibly in the Windows background.
+
 ## Owner Data Collection
 
 Default label is `owner`.
