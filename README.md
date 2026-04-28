@@ -73,8 +73,15 @@ The AI starts out completely empty and passively learns your habits. You should 
 
 ### How to Train:
 Run the automated pipeline to compile your SQLite data, build the Sklearn models, and verify feature weights:
+
+**Linux:**
 ```bash
 ./run_pipeline.sh
+```
+
+**Windows:**
+```powershell
+.\run_pipeline.ps1
 ```
 
 ---
@@ -86,11 +93,20 @@ When you are ready to train Deep Learning classifiers (like LightGBM), you need 
 1. Have your friend clone this repo and run `./start_background.sh` on their Linux machine for a few hours.
 2. Have them send you their `python_engine/behavior_data.db` file.
 3. Save their database file to your machine (e.g., `~/Downloads/friend_db.db`).
-4. Run the remote import tool. It will selectively strip their database IDs, forcefully label all their telemetry as `impostor`, and merge it directly into your live master DB:
+4. Run the remote import tool. It will selectively strip their database IDs, forcefully label all their telemetry as `impostor`, and merge it directly into your live master DB.
+   
+   **Linux:**
    ```bash
    cd python_engine
    source venv/bin/activate
    python import_impostor_db.py ~/Downloads/friend_db.db
+   ```
+
+   **Windows:**
+   ```powershell
+   cd python_engine
+   .\venv\Scripts\Activate.ps1
+   python import_impostor_db.py C:\Users\Downloads\friend_db.db
    ```
 
 ---
