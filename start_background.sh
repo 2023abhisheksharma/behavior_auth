@@ -33,7 +33,7 @@ else
     VENV_PYTHON="python3" # Fallback
 fi
 
-nohup $VENV_PYTHON receiver.py > /tmp/behavior_python_receiver.log 2>&1 &
+nohup $VENV_PYTHON -u receiver.py > /tmp/behavior_python_receiver.log 2>&1 &
 echo "Python Receiver started using $VENV_PYTHON."
 
 echo "All services running in the background!"
