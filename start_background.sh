@@ -5,6 +5,10 @@ cd "$(dirname "$0")"
 
 echo "Starting Behavior Auth Background Services..."
 
+# Prompt for sudo password upfront in the foreground so backgrounding doesn't break
+echo "We need administrator permissions to read mouse/keyboard devices."
+sudo -v
+
 # 1. Start the C++ Event Engine with sudo
 cd event_engine/build
 if [ ! -f "event_engine" ]; then
