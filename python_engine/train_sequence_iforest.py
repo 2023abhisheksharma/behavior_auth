@@ -66,8 +66,8 @@ def main():
 
     print("Sequence rows:", X.shape)
 
-    if len(X) < 20:
-        raise RuntimeError("Need at least 20 sequence rows to train temporal model")
+    if len(X) < 10:
+        raise RuntimeError("Need at least 10 sequence rows to train temporal model")
 
     model = build_sequence_pipeline(n_estimators=250)
 

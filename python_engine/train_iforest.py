@@ -43,8 +43,8 @@ df = df[(df["typing_speed"] > 0.05) | (df["mean_velocity"] > 0.5)]
 
 print("Dataset shape:", df.shape)
 
-if len(df) < 20:
-    raise RuntimeError("Need at least 20 owner samples to train")
+if len(df) < 15:
+    raise RuntimeError("Need at least 15 owner samples to train")
 
 if len(df) < 80:
     print("Warning: low sample count; model quality may be weak")
