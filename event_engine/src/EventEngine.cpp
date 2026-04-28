@@ -138,15 +138,16 @@ void EventEngine::run() {
 
                 if (ev.type == EV_KEY) {
 
-                    uint64_t ts = now_micro();
+                    uint64_t ts = (uint64_t)ev.time.tv_sec * 1000000ULL + ev.time.tv_usec;
                     std::stringstream ss;
 
-                    if (ev.value == 1)
+                    if (ev.value == 1) {
                         ss << ts << "," << sequence++ << ",KEY_DOWN," << ev.code;
-                    else if (ev.value == 0)
+                        publisher.publish(ss.str());
+                    } else if (ev.value == 0) {
                         ss << ts << "," << sequence++ << ",KEY_UP," << ev.code;
-
-                    publisher.publish(ss.str());
+                        publisher.publish(ss.str());
+                    }
                 }
             }
         }
@@ -183,7 +184,7 @@ void EventEngine::run() {
 
                         if (moved[i]) {
 
-                            uint64_t ts = now_micro();
+                            uint64_t ts = (uint64_t)ev.time.tv_sec * 1000000ULL + ev.time.tv_usec;
                             std::stringstream ss;
                             ss << ts << "," << sequence++ << ",MOUSE_MOVE," << i << "," << dx[i] << "," << dy[i];
 

@@ -69,16 +69,10 @@ class RealtimeEngine:
             score = (1.0 - w) * instant_score + w * sequence_score
             mode = f"blended({model_source})"
 
-        # Update dynamic min/max range for stable normalization over time.
-        self.min_score = min(self.min_score, float(score))
-        self.max_score = max(self.max_score, float(score))
-
-        span = self.max_score - self.min_score
-        if span <= 1e-9:
-            norm = 0.5
-        else:
-            norm = (score - self.min_score) / span
-            norm = max(0, min(1, norm))
+        # Map IF score (usually in [-0.2, 0.2]) to norm [0, 1] 
+        # where score=0 is exactly norm=0.5.
+        norm = 0.5 + (score * 5.0)
+        norm = max(0.0, min(1.0, norm))
 
         if activity not in self.trust_by_activity:
             self.trust_by_activity[activity] = self.trust_score
