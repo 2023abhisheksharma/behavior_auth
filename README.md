@@ -244,7 +244,12 @@ sudo systemctl enable behavior_auth.service
 sudo systemctl start behavior_auth.service
 ```
 
-The system will now automatically launch globally in the background every time your Linux machine boots up. You can track ongoing AI logs at `/tmp/behavior_python_receiver.log`.
+The system will now automatically launch globally in the background every time your Linux machine boots up. 
+
+To watch the live logs from the AI models in real-time, run:
+```bash
+tail -f /tmp/behavior_python_receiver.log
+```
 
 ### Windows (Task Scheduler)
 
