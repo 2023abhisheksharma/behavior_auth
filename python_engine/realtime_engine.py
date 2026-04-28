@@ -43,8 +43,10 @@ class RealtimeEngine:
 
     def predict(self, feature_vector):
         if self.model is None and not self.context_models:
-            print("Model unavailable; skipping prediction")
-            return
+            self.reload_model()
+            if self.model is None and not self.context_models:
+                print("Model unavailable; skipping prediction")
+                return
 
         X = pd.DataFrame([feature_vector], columns=FEATURE_COLUMNS)
         activity = int(feature_vector[-1]) if feature_vector else 0
