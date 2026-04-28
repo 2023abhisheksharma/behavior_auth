@@ -165,14 +165,14 @@ class RealtimeEngine:
             print("ANOMALY")
 
         if self.calibration_remaining > 0:
-            print("ACTION: CONTINUE (calibration)")
+            print("🟢 ACTION: CONTINUE (calibration)")
             return
 
         if self.trust_score < self.lock_threshold:
-            print("ACTION: LOCK SYSTEM")
+            print("🔴 ACTION: LOCK SYSTEM")
 
         elif self.trust_score < self.alert_threshold:
-            print("ACTION: ALERT USER")
+            print("🟡 ACTION: ALERT USER")
 
         else:
-            print("ACTION: CONTINUE")
+            print("🟢 ACTION: CONTINUE")
