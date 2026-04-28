@@ -25,10 +25,10 @@ echo "Starting Python Receiver..."
 
 # Make sure we use the EXACT venv context by explicitly feeding it the fully qualified python binary
 VENV_PYTHON=""
-if [ -d ".venv/bin" ]; then
-    VENV_PYTHON="$(pwd)/.venv/bin/python"
-elif [ -d "venv/bin" ]; then
+if [ -d "venv/bin" ]; then
     VENV_PYTHON="$(pwd)/venv/bin/python"
+elif [ -d ".venv/bin" ]; then
+    VENV_PYTHON="$(pwd)/.venv/bin/python"
 else
     VENV_PYTHON="python3" # Fallback
 fi
