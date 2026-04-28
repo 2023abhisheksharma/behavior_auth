@@ -69,9 +69,9 @@ class RealtimeEngine:
             score = (1.0 - w) * instant_score + w * sequence_score
             mode = f"blended({model_source})"
 
-        # Map IF score (usually in [-0.2, 0.2]) to norm [0, 1] 
+        # Map IF score (usually in [-0.15, 0.15]) to norm [0, 1] 
         # where score=0 is exactly norm=0.5.
-        norm = 0.5 + (score * 5.0)
+        norm = 0.5 + (score * 3.33)
         norm = max(0.0, min(1.0, norm))
 
         if activity not in self.trust_by_activity:
