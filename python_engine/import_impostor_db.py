@@ -1,5 +1,4 @@
 import sqlite3
-import shutil
 import sys
 from pathlib import Path
 from database import DB_PATH
@@ -32,6 +31,12 @@ def merge_dbs(impostor_db_path):
     
     # 💥 CRITICAL: Relabel everything they did as 'impostor'
     df_imp['label'] = "impostor"
+    if 'data_source' in df_imp.columns:
+        df_imp['data_source'] = "external_imported_db"
+    if 'keyboard_event_count' in df_imp.columns:
+        df_imp['keyboard_event_count'] = df_imp['keyboard_event_count'].fillna(0)
+    if 'mouse_event_count' in df_imp.columns:
+        df_imp['mouse_event_count'] = df_imp['mouse_event_count'].fillna(0)
     
     # Drop their local ID to avoid primary key conflicts when appending to our DB
     if 'id' in df_imp.columns:
@@ -40,7 +45,7 @@ def merge_dbs(impostor_db_path):
     # Insert everything into our main DB
     df_imp.to_sql("features", conn_main, if_exists="append", index=False)
     
-    print(f"✅ Success! Merged {len(df_imp)} impostor records. You can now run LightGBM training.")
+    print(f"✅ Success! Merged {len(df_imp)} real impostor records. You can now run calibrated Chronos training.")
 
     conn_main.close()
     conn_imp.close()

@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <defs>
+    <filter id="drop-shadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#000" flood-opacity="0.3"/>
+    </filter>
+    <linearGradient id="shieldLeft" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#34D399"/>
+      <stop offset="100%" stop-color="#10B981"/>
+    </linearGradient>
+    <linearGradient id="shieldRight" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#10B981"/>
+      <stop offset="100%" stop-color="#059669"/>
+    </linearGradient>
+  </defs>
+  <g filter="url(#drop-shadow)">
+    <!-- Left Hemisphere -->
+    <path d="M 64,10 L 19,23 L 19,70 Q 64,117 64,117 Z" fill="url(#shieldLeft)"/>
+    <!-- Right Hemisphere -->
+    <path d="M 64,10 L 109,23 L 109,70 Q 64,117 64,117 Z" fill="url(#shieldRight)"/>
+    <!-- Outer Rim -->
+    <path d="M 64,10 L 109,23 L 109,70 Q 64,117 64,117 Q 19,70 19,70 L 19,23 Z" fill="none" stroke="#FFFFFF" stroke-width="3.5" stroke-linejoin="round" opacity="0.9"/>
+    <!-- Center Emblem Hub -->
+    <circle cx="64" cy="61" r="28" fill="#FFFFFF" opacity="0.96"/>
+    <!-- Checkmark Motif -->
+    <path d="M 52,60 L 61,70 L 78,50" fill="none" stroke="#047857" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>

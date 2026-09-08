@@ -58,6 +58,10 @@ void EventEngine::run() {
     std::vector<libevdev*> mouse_devs;
 
     std::vector<std::string> event_paths;
+    if (!std::filesystem::exists("/dev/input")) {
+        std::cerr << "Input device directory /dev/input is unavailable\n";
+        return;
+    }
     for (const auto& entry : std::filesystem::directory_iterator("/dev/input")) {
         auto name = entry.path().filename().string();
         if (name.rfind("event", 0) == 0) {
@@ -97,7 +101,9 @@ void EventEngine::run() {
         std::cerr << "No mouse devices found!\n";
     }
 
-    EventPublisher publisher("tcp://*:5555");
+    const char* env_port = std::getenv("BEHAVIOR_ZMQ_PORT");
+    std::string endpoint = std::string("tcp://*:") + (env_port && *env_port ? env_port : "5555");
+    EventPublisher publisher(endpoint);
 
     int total_devices = 1 + mouse_fds.size();
     std::vector<pollfd> fds(total_devices);
@@ -169,6 +175,18 @@ void EventEngine::run() {
                     }
                     if (rc < 0) break;
 
+                    if (ev.type == EV_KEY) {
+                        uint64_t ts = (uint64_t)ev.time.tv_sec * 1000000ULL + ev.time.tv_usec;
+                        std::stringstream ss;
+                        if (ev.value == 1) {
+                            ss << ts << "," << sequence++ << ",MOUSE_DOWN," << i << "," << ev.code;
+                            publisher.publish(ss.str());
+                        } else if (ev.value == 0) {
+                            ss << ts << "," << sequence++ << ",MOUSE_UP," << i << "," << ev.code;
+                            publisher.publish(ss.str());
+                        }
+                    }
+
                     if (ev.type == EV_REL) {
                         if (ev.code == REL_X) {
                             dx[i] += ev.value;
@@ -177,6 +195,12 @@ void EventEngine::run() {
                         if (ev.code == REL_Y) {
                             dy[i] += ev.value;
                             moved[i] = true;
+                        }
+                        if (ev.code == REL_WHEEL) {
+                            uint64_t ts = (uint64_t)ev.time.tv_sec * 1000000ULL + ev.time.tv_usec;
+                            std::stringstream ss;
+                            ss << ts << "," << sequence++ << ",MOUSE_SCROLL," << i << "," << ev.value;
+                            publisher.publish(ss.str());
                         }
                     }
 

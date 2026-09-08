@@ -5,14 +5,7 @@ from pathlib import Path
 
 import database  # Ensures DB migration runs before everything else.
 
-from settings import (
-    DB_PATH,
-    MODEL_PATH,
-    SEQUENCE_MODEL_PATH,
-    CONTEXT_MODEL_DIR,
-    CONTEXT_SEQUENCE_MODEL_DIR,
-    ACTIVITY_LABELS,
-)
+from settings import ACTIVITY_LABELS, DB_PATH
 
 BASE_DIR = Path(__file__).resolve().parent
 
@@ -81,23 +74,13 @@ def print_dataset_summary():
 
 def verify_models():
     print("\n=== Model Check ===")
-    expected = [Path(MODEL_PATH), Path(SEQUENCE_MODEL_PATH)]
-
-    for p in expected:
-        print(f"  - {'OK' if p.exists() else 'MISSING'}: {p}")
-
-    context_dir = Path(CONTEXT_MODEL_DIR)
-    seq_context_dir = Path(CONTEXT_SEQUENCE_MODEL_DIR)
-
-    print("Instant context models:")
-    for activity_id, name in ACTIVITY_LABELS.items():
-        p = context_dir / f"iforest_activity_{activity_id}.pkl"
-        print(f"  - {'OK' if p.exists() else 'MISSING'}: {name} -> {p}")
-
-    print("Sequence context models:")
-    for activity_id, name in ACTIVITY_LABELS.items():
-        p = seq_context_dir / f"sequence_iforest_activity_{activity_id}.pkl"
-        print(f"  - {'OK' if p.exists() else 'MISSING'}: {name} -> {p}")
+    print("Chronos-Auth Next-Gen models:")
+    chronos_dir = BASE_DIR / "models" / "chronos"
+    for fname in ["chronos_classifier.pkl", "chronos_meta.json"]:
+        p = chronos_dir / fname
+        print(f"  - {'OK' if p.exists() else 'MISSING'}: {fname} -> {p}")
+    mouse_model = chronos_dir / "chronos_mouse_model.pkl"
+    print(f"  - {'OK' if mouse_model.exists() else 'NOT AVAILABLE (no measured mouse profile)'}: chronos_mouse_model.pkl -> {mouse_model}")
 
 
 def main():
@@ -106,8 +89,7 @@ def main():
     print(f"DB: {DB_PATH}")
 
     print_dataset_summary()
-    run_step("Train Instant Models (Global + Context)", "train_iforest.py")
-    run_step("Train Sequence Models (Global + Context)", "train_sequence_iforest.py")
+    run_step("Train Chronos-Auth Contrastive & SPRT Models", "train_chronos.py")
     verify_models()
 
     print("\nPipeline completed successfully.")

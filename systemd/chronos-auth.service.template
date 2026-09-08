@@ -1,0 +1,17 @@
+[Unit]
+Description=Chronos-Auth Continuous Behavioral Biometric Security Service
+Documentation=https://github.com/2023abhisheksharma/behavior_auth
+After=graphical-session.target network.target
+
+[Service]
+Type=forking
+WorkingDirectory=@@WORKSPACE_DIR@@
+ExecStart=@@WORKSPACE_DIR@@/start.sh
+ExecStop=@@WORKSPACE_DIR@@/stop.sh
+Restart=on-failure
+RestartSec=5
+TimeoutSec=25
+KillMode=process
+
+[Install]
+WantedBy=default.target

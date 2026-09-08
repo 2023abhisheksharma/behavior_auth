@@ -1,5 +1,10 @@
 from collections import deque
-from feature_engine import add_event_and_check_window
+import os
+from chronos_auth.realtime_pipeline import ChronosRealtimePipeline
+from chronos_auth.ngram_analyzer import normalize_windows_key_code
+
+# Sub-second dual-horizon continuous authentication engine
+chronos_engine = ChronosRealtimePipeline()
 
 
 def process_event(msg, buffer):
@@ -31,6 +36,8 @@ def process_event(msg, buffer):
     try:
         if event_type in ("KEY_DOWN", "KEY_UP"):
             event["key_code"] = int(parts[payload_index + 1])
+            if os.name == "nt":
+                event["key_code"] = normalize_windows_key_code(event["key_code"])
         elif event_type == "MOUSE_MOVE":
             # new: ts,seq,MOUSE_MOVE,device,dx,dy
             # old: ts,MOUSE_MOVE,dx,dy
@@ -42,10 +49,16 @@ def process_event(msg, buffer):
                 event["device"] = 0
                 event["dx"] = int(parts[payload_index + 1])
                 event["dy"] = int(parts[payload_index + 2])
+        elif event_type in ("MOUSE_DOWN", "MOUSE_UP"):
+            event["device"] = int(parts[payload_index + 1])
+            event["key_code"] = int(parts[payload_index + 2])
+        elif event_type == "MOUSE_SCROLL":
+            event["device"] = int(parts[payload_index + 1])
+            event["value"] = int(parts[payload_index + 2])
         else:
             return
     except (ValueError, IndexError):
         return
 
     buffer.append(event)
-    add_event_and_check_window(event)
+    chronos_engine.process_event(event)

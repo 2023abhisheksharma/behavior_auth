@@ -1,11 +1,13 @@
+import os
 import zmq
 from collections import deque
 from event_processor import process_event
 
+port = os.getenv("BEHAVIOR_ZMQ_PORT", "5555")
 context = zmq.Context()
 socket = context.socket(zmq.SUB)
 socket.setsockopt(zmq.RCVHWM, 10000)
-socket.connect("tcp://localhost:5555")
+socket.connect(f"tcp://localhost:{port}")
 socket.setsockopt_string(zmq.SUBSCRIBE, "")
 
 print("Listening...")

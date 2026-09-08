@@ -1,196 +1,225 @@
-# 🛡️ Behavior Authentication System
+# 🛡️ Chronos-Auth: Continuous Behavioral Biometrics Suite
 
-A continuous, behavior-based authentication system using keystroke dynamics and mouse telemetry. 
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![Python: 3.10+](https://img.shields.io/badge/Python-3.10+-brightgreen.svg)](https://www.python.org/)
+[![C++: 17](https://img.shields.io/badge/C++-17-blue.svg)](https://isocpp.org/)
+[![Status: Research Grade](https://img.shields.io/badge/Status-Research%20Grade%20(2026)-gold.svg)]()
 
-The system uses a highly optimized C++ engine to capture low-level Linux hardware inputs and publishes them over ZeroMQ to a Python machine-learning receiver. The Python engine extracts behavioral features, stores them in SQLite, and scores them in real-time against user-trained Anomaly Detection models (Isolation Forest).
+**Chronos-Auth** is a research-grade continuous authentication suite for workstations. It scores measured keyboard dynamics and, when available, measured mouse kinematics. Shortcut and Bluetooth telemetry are displayed separately and are not treated as biometric proof unless a trained model explicitly supports them.
+
+The system uses a calibrated owner/impostor classifier followed by a Wald Sequential Probability Ratio Test (SPRT). Deployment error rates are not claimed until measured on representative real data.
 
 ---
 
-## 🛠️ 1. Installation & Setup (Linux)
+## 🌟 Key Breakthrough Capabilities
 
-### 1.1 Install System Dependencies
-```bash
-sudo apt update
-sudo apt install -y build-essential cmake pkg-config libevdev-dev libzmq3-dev cppzmq-dev python3 python3-venv
-```
+### 1. ⚡ Dual-Horizon Biometric Inference
+* **Sub-Second Fast-Path**: Analyzes ballistic mouse movement strokes and key digraph intervals every **1.5 seconds**, instantly flagging anomalies.
+* **Macro Slow-Path (Wald's SPRT)**: Accumulates evidence across live samples; lockout latency and error rates require empirical validation for the target workstation and user.
 
-### 1.2 Build the C++ Event Engine
+### 2. 🖱️ Ballistic Mouse Kinematics & Bézier Profiling
+* **Jerk Minimization**: Measures root-mean-square jerk ($\text{m/s}^3$) representing human motor control fluidity.
+* **Trajectory Tortuosity**: Computes the ratio of actual cursor path length to Euclidean distance ($\text{Length} / \text{Distance}$).
+* **Hand-Transition Latency (HTL)**: Profiles the subconscious neuromuscular delay between releasing the keyboard and moving the mouse.
+
+### 3. ⌨️ Dynamic Open-Vocabulary Shortcut Profiler
+* **No Hardcoded Keys**: Automatically learns **any** keyboard shortcut or custom hotkey the user presses (e.g. `Ctrl+C`, `Alt+Tab`, custom IDE/editor commands, Blender/Vim key sequences).
+* **Muscle Memory Lead-Time**: Measures the precise microsecond interval between pressing modifier keys and character keys.
+* **Persistent Habit Profile**: Saves your personal shortcut dictionary to `shortcuts_profile.json` for telemetry and inspection; shortcut heuristics are not added to the authentication LLR.
+
+### 4. 📱 Bluetooth Phone Proximity (The Walk-Away Lock)
+* Passively monitors the Bluetooth RSSI signal strength of your paired smartphone or smartwatch in the background.
+* **Walk-Away Auto Lock**: Locks the workstation within 1 second if you walk away with your phone (RSSI $< -85\text{ dBm}$ or disconnected).
+* **Fatigue Baseline Cushion**: When your phone is present, baseline trust is bolstered to eliminate false rejections during relaxed typing.
+
+### 5. 🚨 Hardware Anti-Bot & BadUSB / Rubber Ducky Interceptor
+* Automatically detects automated keystroke injectors (USB Rubber Ducky, Flipper Zero BadUSB, software macro scripts).
+* Flags mathematically zero-jitter key dwell times ($\sigma < 2.5\text{ms}$ vs. human $\sigma \ge 15\text{ms}$), superhuman typing speeds ($> 25\text{ chars/s}$), and robotic straight-line cursor movement ($\text{tortuosity} = 1.0000$).
+
+### 6. 🗔 Dedicated Native Desktop Application (Zero-Code / No-Browser)
+* Comes with a native desktop application window (CustomTkinter, dark mode, responsive layout).
+* **100% Offline**: No browser tabs, no web URLs, no cloud dependencies.
+* Includes a **3-Step First-Run Onboarding Wizard** that guides non-technical users from passive learning to full AI arming.
+
+---
+
+## 🚀 Quick Start & Installation
+
+### Option A: One-Click Automated Setup (Recommended)
+
+#### On Linux:
 ```bash
 git clone https://github.com/2023abhisheksharma/behavior_auth.git
 cd behavior_auth
-
-mkdir -p event_engine/build
-cd event_engine/build
-cmake ..
-make
-cd ../..
+./setup.sh
 ```
+* Automatically installs required system libraries (`libevdev-dev`, `cmake`, `libzmq3-dev`).
+* Builds the C++ hardware engine and sets up the Python virtual environment.
+* Generates a native **Chronos Auth** desktop icon on your Desktop and Applications Menu.
+* Launches the dedicated desktop app window immediately!
 
-### 1.3 Setup Python Machine Learning Environment
+#### On Windows:
+1. Double-click `setup_windows.bat`.
+2. It sets up the environment and creates a **Chronos-Auth** desktop shortcut.
+3. Launches the dedicated desktop window automatically.
+
+---
+
+### Option B: Standalone Portable Binary (No Python Needed)
+You can run the pre-compiled standalone native binary directly without installing Python, pip, or any packages:
 ```bash
-cd python_engine
-python3 -m venv venv
-source venv/bin/activate
-pip install -r ../requirements.txt
-cd ..
+./dist/chronos-auth/chronos-auth
 ```
 
 ---
 
-## 🚀 2. Running the System
+## 🖥️ Using the Dedicated Desktop Application
 
-You have two choices for running the data collection and inference pipeline: visually in the foreground, or invisibly in the background.
-
-### Option A: Clean Background Service (Recommended)
-We have a fully automated script that launches the C++ tracker and Python ML receiver seamlessly in the background.
-
-1. **Start the service:**
-   ```bash
-   ./start_background.sh
-   ```
-2. **Watch the live AI predictions:**
-   ```bash
-   tail -f /tmp/behavior_python_receiver.log
-   ```
-3. **Stop the service:**
-   ```bash
-   sudo pkill -f event_engine && pkill -f "receiver.py"
-   ```
-
-### Option B: Manual Foreground Terminals (For Debugging)
-Open two separate terminals:
-* **Terminal 1 (Publisher):** `cd event_engine/build && sudo ./event_engine`
-* **Terminal 2 (Receiver):** `cd python_engine && source venv/bin/activate && python receiver.py`
-
----
-
-## 🧠 3. Training the AI
-
-The AI starts out completely empty and passively learns your habits. You should retrain the system periodically so it gets smarter at recognizing you.
-
-* **Phase 1 (1 Hour):** After 1-2 hours of usage (around 100-200 frames), run the training pipeline to generate the global models.
-* **Phase 2 (End of Day):** After compiling ~500+ frames, retraining will generate Context-Aware Models (specific AIs for when you are typing vs when you are using the mouse).
-
-### How to Train:
-Run the automated pipeline to compile your SQLite data, build the Sklearn models, and verify feature weights:
-
-**Linux:**
+Launch the desktop suite at any time by running:
 ```bash
-./run_pipeline.sh
+./app.sh
 ```
+*(Or by double-clicking the **Chronos Auth** icon on your Desktop).*
 
-**Windows:**
-```powershell
-.\run_pipeline.ps1
-```
-
----
-
-## 🕵️ 4. Importing Impostor Data (For Friends/Teammates)
-
-When you are ready to train Deep Learning classifiers (like LightGBM), you need real data from other humans ("impostors"). Rather than lending them your laptop, they can run this system on theirs!
-
-1. Have your friend clone this repo and run `./start_background.sh` on their Linux machine for a few hours.
-2. Have them send you their `python_engine/behavior_data.db` file.
-3. Save their database file to your machine (e.g., `~/Downloads/friend_db.db`).
-4. Run the remote import tool. It will selectively strip their database IDs, forcefully label all their telemetry as `impostor`, and merge it directly into your live master DB.
-   
-   **Linux:**
-   ```bash
-   cd python_engine
-   source venv/bin/activate
-   python import_impostor_db.py ~/Downloads/friend_db.db
-   ```
-
-   **Windows:**
-   ```powershell
-   cd python_engine
-   .\venv\Scripts\Activate.ps1
-   python import_impostor_db.py C:\Users\Downloads\friend_db.db
-   ```
-
----
-
-## 🪟 5. Windows Support (Setup & Architecture)
-
-Using the cross-platform capabilities via the `EventEngine_Windows.cpp` implementation, here is the full pipeline and setup for running data analytics or live collection in Windows.
-
-### 5.1 Architecture Pipeline
 ```text
-C++ Raw Input (Windows) / libevdev (Linux)
-        ↓
-      ZeroMQ
-        ↓
-  Python Receiver
-        ↓
-  Event Processor
-        ↓
-  Feature Engine
-        ↓
-    SQLite DB
-        ↓
-IsolationForest Model
-        ↓
-    Trust System
-        ↓
-  Decision Output
+┌────────────────────────────────────────────────────────────────────────────────────────┐
+│  Chronos-Auth 🛡️ Continuous Biometrics Hub                                    —  □  ✕  │
+├───────────────────┬────────────────────────────────────────────────────────────────────┤
+│  CHRONOS-AUTH     │  Live Security Dashboard                                           │
+│  Zero-Trust       │  ┌───────────────────────────────┐ ┌─────────────────────────────┐ │
+│                   │  │ CONTINUOUS TRUST SCORE        │ │ ACTIVE TASK & STATE         │ │
+│  [🛡️  Live State]  │  │                               │ │ Context: Coding / IDE       │ │
+│  [📱  Phone Pair]  │  │              100%             │ │ Wald SPRT LLR: -4.60 (Safe) │ │
+│  [⌨️  Shortcuts]   │  │                               │ │ Rate: Sub-second (1.5s)     │ │
+│  [📊  Telemetry]  │  │  🟢 [CONTINUE] AUTHENTICATED   │ │                             │ │
+│  [⚙️  Settings]   │  └───────────────────────────────┘ └─────────────────────────────┘ │
+│                   │                                                                    │
+│  ───────────────  │  SYSTEM PROTECTION LOG                                             │
+│  ● Status: ACTIVE │  ┌───────────────────────────────────────────────────────────────┐ │
+│  [⏹ Stop Guard]  │  │ [Chronos-Auth] Hardware event engine and AI scoring active.   │ │
+│                   │  │ [Chronos-Auth] Wald SPRT: Owner verified.                     │ │
+│                   │  └───────────────────────────────────────────────────────────────┘ │
+└───────────────────┴────────────────────────────────────────────────────────────────────┘
 ```
 
-### 5.2 Build Event Engine in Windows
-* Download & install **Visual Studio** (Desktop development with C++).
-* **Install ZeroMQ via vcpkg:**
-  ```cmd
-  git clone https://github.com/microsoft/vcpkg
-  cd vcpkg
-  bootstrap-vcpkg.bat
-  vcpkg install zeromq:x64-windows cppzmq:x64-windows
-  vcpkg integrate install
-  ```
-* Open Visual Studio, create a Console Application, add `.cpp` files, and build the `event_engine.exe`.
+* **🛡️ Live Security**: Real-time 0–100% trust gauge, active task context, and live decision streaming.
+* **📱 Phone Pairing**: 1-Click "Scan Nearby Phones & Watches", pair device for Walk-Away auto-lock.
+* **⌨️ Dynamic Shortcuts**: View discovered keyboard shortcuts and individual muscle-memory intervals.
+* **📊 Telemetry & AI Model**: View total collected samples and trigger **1-Click AI Retraining**.
+* **⚙️ Settings**: Toggle Simulation Mode vs Real Lock Mode, adjust sensitivity (Relaxed / Balanced / Strict).
 
-### 5.3 Setup ML Environment in Windows
-* Install **Python** and check `Add to PATH`.
-* Open a terminal or PowerShell:
-  ```powershell
-  python -m venv python_engine\venv
-  python_engine\venv\Scripts\Activate.ps1
-  pip install pyzmq numpy scikit-learn joblib matplotlib
-  ```
+---
 
-### 5.4 Running Data Collection & Evaluating
-**Step 1:** Run `event_engine.exe`
-**Step 2:** Start Python Receiver:
-```powershell
-cd python_engine
-python receiver.py
-```
-**Verify:** Check `python_engine/behavior_data.db` via **DB Browser for SQLite** to see your recorded behavioral data.
-**Test & Train:**
-```powershell
-python train_iforest.py
-python evaluate_model.py
+## 🤖 Headless / Background Service Management
+
+For headless servers or users who prefer invisible background execution:
+
+```bash
+# Start background hardware capture and AI inference
+./start.sh
+
+# Watch live AI decision stream
+tail -f /tmp/behavior_python_receiver.log
+
+# Gracefully stop all background services
+./stop.sh
 ```
 
 ---
 
-## ⚙️ Systemd Persistent Daemon (Advanced Linux)
-To make the system launch globally on boot without needing to open a terminal:
-1. `sudo nano /etc/systemd/system/behavior_auth.service`
-2. Configure it:
-   ```ini
-   [Unit]
-   Description=Behavior Authentication Security Service
-   After=network.target
+## 🧠 Model Training & Architecture
 
-   [Service]
-   Type=simple
-   User=root
-   WorkingDirectory=/path/to/behavior_auth
-   ExecStart=/path/to/behavior_auth/start_background.sh
-   Restart=on-failure
-   RestartSec=5
+### Architectural Pipeline
+```text
+Hardware Event Stream (Linux /dev/input or Windows RawInput)
+        ↓
+High-Performance C++ Event Engine (Poll loop, microsecond timestamps)
+        ↓
+IPC Bus (ZeroMQ IPC / TCP Socket)
+        ↓
+Python Chronos-Auth Engine:
+  ├── ContextDetector (Classifies active window: IDE, Terminal, Browser, Documents, Chat)
+  ├── StrokeAnalyzer (Ballistic mouse paths, Bézier tortuosity, jerk RMS, HTL)
+  ├── NgramAnalyzer (Neuromuscular key dwell, cross-hand flight, legato overlap)
+  ├── ChordAnalyzer (Dynamic shortcut telemetry, not model evidence)
+  ├── AntiBotDetector (Zero-jitter Rubber Ducky & BadUSB injection interceptor)
+  └── BluetoothProximityMonitor (Phone RSSI walk-away auto-lock)
+        ↓
+Measured behavioral feature vector
+        ↓
+Calibrated owner/impostor keyboard classifier
+        ↓
+Measured mouse one-class profile when enough real mouse samples exist
+        ↓
+Wald's Sequential Probability Ratio Test (SPRT)
+        ↓
+Decision Enforcement: High Trust ──► Step-Up MFA Challenge ──► Workstation Lock
+```
 
-   [Install]
-   WantedBy=multi-user.target
-   ```
-3. Enable it: `sudo systemctl daemon-reload && sudo systemctl enable behavior_auth.service && sudo systemctl start behavior_auth.service`
+### Manual Retraining Pipeline
+To retrain the Chronos-Auth model:
+```bash
+# Import the real CMU benchmark as labeled external impostor data first.
+python_engine/venv/bin/python python_engine/import_public_keystroke.py /path/to/DSL-StrongPasswordData.csv
+
+python_engine/venv/bin/python python_engine/run_full_pipeline.py
+```
+The importer records public dataset provenance and never synthesizes or perturbs impostor rows. Missing telemetry remains missing. Live observations are stored as `unverified_live` and are not used for training until explicitly reviewed. Mouse scoring stays disabled until real measured mouse samples are available.
+
+---
+
+## 📁 Repository Structure
+
+```text
+behavior_auth/
+├── app.sh                         # Native desktop application launcher
+├── app_windows.bat                # Windows native desktop launcher
+├── setup.sh                       # One-click Linux automated installer
+├── setup_windows.bat              # One-click Windows automated installer
+├── package_app.sh                 # PyInstaller standalone bundler
+├── start.sh                       # Background service starter
+├── stop.sh                        # Background service stopper
+├── requirements.txt               # Machine learning & GUI dependencies
+├── dist/
+│   └── chronos-auth/              # Portable standalone binary (runs with zero dependencies)
+├── event_engine/                  # C++ hardware event capture engine
+│   ├── CMakeLists.txt
+│   └── src/
+│       ├── EventEngine.cpp        # Linux libevdev capture (keys, mouse, clicks, wheel)
+│       └── EventEngine_Windows.cpp# Windows RawInput capture
+└── python_engine/                 # Machine learning & inference suite
+    ├── desktop_app.py             # Dedicated Tk desktop application
+    ├── app_server.py              # Live HTTP dashboard server
+    ├── receiver.py                # ZeroMQ telemetry receiver
+    ├── event_processor.py         # Hardware event dispatcher
+    ├── behavior_data.db           # Master SQLite biometric telemetry store
+    ├── shortcuts_profile.json     # Dynamically learned personal shortcut memory
+    ├── bluetooth_config.json      # Paired phone device configuration
+    └── chronos_auth/              # Next-generation multi-modal biometric package
+        ├── bluetooth_proximity.py # Bluetooth RSSI phone walk-away monitor
+        ├── chord_analyzer.py      # Open-vocabulary shortcut muscle memory engine
+        ├── antibot_detector.py    # Hardware BadUSB / Rubber Ducky interceptor
+        ├── stroke_analyzer.py     # Ballistic mouse kinematics & Bézier tortuosity
+        ├── ngram_analyzer.py      # Neuromuscular key timing & hand-transition
+        ├── context_detector.py    # Active desktop application classification
+        ├── chronos_features.py    # 26-dimensional multi-modal vector assembler
+        ├── contrastive_model.py   # Calibrated classifier + measured mouse profile
+        ├── sprt_trust_engine.py   # Wald's Sequential Probability Ratio Test
+        └── realtime_pipeline.py   # Live sub-second inference engine
+```
+
+---
+
+## 📜 Validation Status
+
+| Metric | Current status |
+| :--- | :--- |
+| **Held-out AUC** | Reported only for imported labeled rows; not a deployment guarantee |
+| **Mouse model** | Disabled until real measured mouse samples are collected |
+| **Impostor lockout latency / EER / FRR** | Not established empirically |
+| **Bluetooth proximity** | Disabled unless a real configured device reports connected |
+
+---
+
+## 📄 License
+MIT License. Open-source for academic research and personal security.

@@ -15,7 +15,9 @@ uint64_t now_micro_win() {
 void EventEngine::run() {
     std::cout << "Windows Event Engine (Raw Input) Starting..." << std::endl;
 
-    EventPublisher publisher("tcp://*:5555");
+    const char* env_port = std::getenv("BEHAVIOR_ZMQ_PORT");
+    std::string endpoint = std::string("tcp://*:") + (env_port && *env_port ? env_port : "5555");
+    EventPublisher publisher(endpoint);
     uint64_t sequence = 0;
 
     // Register Raw Input Devices (Keyboard & Mouse)
@@ -73,6 +75,39 @@ void EventEngine::run() {
                 
                 if (dx != 0 || dy != 0) {
                     ss << ts << "," << sequence++ << ",MOUSE_MOVE,0," << dx << "," << dy;
+                    publisher.publish(ss.str());
+                }
+
+                const USHORT flags = raw->data.mouse.usButtonFlags;
+                const struct {
+                    USHORT down;
+                    USHORT up;
+                    USHORT code;
+                } buttons[] = {
+                    {RI_MOUSE_BUTTON_1_DOWN, RI_MOUSE_BUTTON_1_UP, 272},
+                    {RI_MOUSE_BUTTON_2_DOWN, RI_MOUSE_BUTTON_2_UP, 273},
+                    {RI_MOUSE_BUTTON_3_DOWN, RI_MOUSE_BUTTON_3_UP, 274},
+                };
+                for (const auto& button : buttons) {
+                    if (flags & button.down) {
+                        ss.str("");
+                        ss.clear();
+                        ss << ts << "," << sequence++ << ",MOUSE_DOWN,0," << button.code;
+                        publisher.publish(ss.str());
+                    }
+                    if (flags & button.up) {
+                        ss.str("");
+                        ss.clear();
+                        ss << ts << "," << sequence++ << ",MOUSE_UP,0," << button.code;
+                        publisher.publish(ss.str());
+                    }
+                }
+
+                if (flags & RI_MOUSE_WHEEL) {
+                    const SHORT wheel = static_cast<SHORT>(raw->data.mouse.usButtonData);
+                    ss.str("");
+                    ss.clear();
+                    ss << ts << "," << sequence++ << ",MOUSE_SCROLL,0," << wheel;
                     publisher.publish(ss.str());
                 }
             }

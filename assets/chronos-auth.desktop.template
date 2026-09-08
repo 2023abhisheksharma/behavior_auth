@@ -1,0 +1,13 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Chronos Auth
+GenericName=Continuous Biometric Security
+Comment=Continuous behavioral biometric security & workstation protection
+Exec=@@WORKSPACE_DIR@@/app.sh
+Icon=@@WORKSPACE_DIR@@/assets/chronos-auth.png
+Terminal=false
+Categories=Security;System;Utility;
+Keywords=security;biometrics;lock;behavior;chronos;
+StartupNotify=true
+StartupWMClass=chronos-auth

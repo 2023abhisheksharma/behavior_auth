@@ -1,0 +1,320 @@
+{
+  "Ctrl+C": {
+    "count": 65,
+    "mean_lead_ms": 1176.2390666666665,
+    "std_lead_ms": 597.6379935462008,
+    "last_seen": 1788841905.671716
+  },
+  "Shift+Super+Right": {
+    "count": 7,
+    "mean_lead_ms": 789.5484285714286,
+    "std_lead_ms": 251.66809960632517,
+    "last_seen": 1788840363.255249
+  },
+  "Shift+Super+Left": {
+    "count": 19,
+    "mean_lead_ms": 781.7410642791551,
+    "std_lead_ms": 142.77843782228604,
+    "last_seen": 1788840159.737022
+  },
+  "Super+Tab": {
+    "count": 457,
+    "mean_lead_ms": 391.4735666666666,
+    "std_lead_ms": 482.78058731641113,
+    "last_seen": 1788842026.476084
+  },
+  "Ctrl+Tab": {
+    "count": 4,
+    "mean_lead_ms": 156.07825,
+    "std_lead_ms": 100.05314867452948,
+    "last_seen": 1788813874.282467
+  },
+  "Super+A": {
+    "count": 9,
+    "mean_lead_ms": 524.7104444444444,
+    "std_lead_ms": 269.3163621025718,
+    "last_seen": 1788841602.5315
+  },
+  "Shift+Enter": {
+    "count": 69,
+    "mean_lead_ms": 526.6267076648842,
+    "std_lead_ms": 178.12578610316257,
+    "last_seen": 1788813871.658271
+  },
+  "Alt+Space": {
+    "count": 21,
+    "mean_lead_ms": 164.02567236761556,
+    "std_lead_ms": 20.755567147098898,
+    "last_seen": 1788840649.281736
+  },
+  "Super+Enter": {
+    "count": 8,
+    "mean_lead_ms": 544.19925,
+    "std_lead_ms": 529.0571547745338,
+    "last_seen": 1788841877.51061
+  },
+  "Super+D": {
+    "count": 7,
+    "mean_lead_ms": 330.65328571428574,
+    "std_lead_ms": 116.51562454805422,
+    "last_seen": 1788841604.681794
+  },
+  "Super+Left": {
+    "count": 1,
+    "mean_lead_ms": 599.044,
+    "std_lead_ms": 15.0,
+    "last_seen": 1788804153.731767
+  },
+  "Alt+R": {
+    "count": 2,
+    "mean_lead_ms": 87.997,
+    "std_lead_ms": 77.822,
+    "last_seen": 1788804777.937396
+  },
+  "Shift+/": {
+    "count": 12,
+    "mean_lead_ms": 208.14866666666668,
+    "std_lead_ms": 102.716525470453,
+    "last_seen": 1788815986.314168
+  },
+  "Shift+;": {
+    "count": 1,
+    "mean_lead_ms": 241.624,
+    "std_lead_ms": 15.0,
+    "last_seen": 1788804328.855393
+  },
+  "Shift+Backspace": {
+    "count": 4,
+    "mean_lead_ms": 1240.255,
+    "std_lead_ms": 390.71009626640057,
+    "last_seen": 1788804330.276739
+  },
+  "Shift+3": {
+    "count": 1,
+    "mean_lead_ms": 998.344,
+    "std_lead_ms": 15.0,
+    "last_seen": 1788804329.612113
+  },
+  "Shift+5": {
+    "count": 1,
+    "mean_lead_ms": 347.543,
+    "std_lead_ms": 15.0,
+    "last_seen": 1788804331.481441
+  },
+  "Ctrl+Shift+C": {
+    "count": 18,
+    "mean_lead_ms": 818.941287878788,
+    "std_lead_ms": 120.41835942341385,
+    "last_seen": 1788842011.710115
+  },
+  "Ctrl+Shift+V": {
+    "count": 10,
+    "mean_lead_ms": 752.4085,
+    "std_lead_ms": 51.694499999999984,
+    "last_seen": 1788842027.467212
+  },
+  "Ctrl+O": {
+    "count": 3,
+    "mean_lead_ms": 124.21600000000001,
+    "std_lead_ms": 9.47098822721262,
+    "last_seen": 1788840842.750129
+  },
+  "Alt+N": {
+    "count": 17,
+    "mean_lead_ms": 97.59779847425301,
+    "std_lead_ms": 9.937628671682125,
+    "last_seen": 1788840992.705747
+  },
+  "Alt+L": {
+    "count": 7,
+    "mean_lead_ms": 105.827,
+    "std_lead_ms": 9.038539758801122,
+    "last_seen": 1788813841.341852
+  },
+  "Super+S": {
+    "count": 2,
+    "mean_lead_ms": 227.9655,
+    "std_lead_ms": 57.59049999999999,
+    "last_seen": 1788840613.161582
+  },
+  "Super+B": {
+    "count": 5,
+    "mean_lead_ms": 176.1364,
+    "std_lead_ms": 63.14724928060339,
+    "last_seen": 1788840807.114511
+  },
+  "Alt+M": {
+    "count": 4,
+    "mean_lead_ms": 109.4645,
+    "std_lead_ms": 2.137166406717082,
+    "last_seen": 1788807234.109861
+  },
+  "Alt+P": {
+    "count": 1,
+    "mean_lead_ms": 120.967,
+    "std_lead_ms": 15.0,
+    "last_seen": 1788805255.082287
+  },
+  "Ctrl+Space": {
+    "count": 4,
+    "mean_lead_ms": 1297.14175,
+    "std_lead_ms": 699.8502906023455,
+    "last_seen": 1788840949.843609
+  },
+  "Super+Caps": {
+    "count": 2,
+    "mean_lead_ms": 769.342,
+    "std_lead_ms": 593.906,
+    "last_seen": 1788806253.558268
+  },
+  "Ctrl+H": {
+    "count": 8,
+    "mean_lead_ms": 100.014125,
+    "std_lead_ms": 0.2584804539791794,
+    "last_seen": 1788815325.807737
+  },
+  "Shift+9": {
+    "count": 2,
+    "mean_lead_ms": 133.029,
+    "std_lead_ms": 68.333,
+    "last_seen": 1788807252.810725
+  },
+  "Shift+0": {
+    "count": 2,
+    "mean_lead_ms": 134.212,
+    "std_lead_ms": 53.519,
+    "last_seen": 1788807256.050915
+  },
+  "Ctrl+T": {
+    "count": 4,
+    "mean_lead_ms": 559.8065,
+    "std_lead_ms": 326.3162042440583,
+    "last_seen": 1788808180.812256
+  },
+  "Ctrl+I": {
+    "count": 7,
+    "mean_lead_ms": 93.47785714285713,
+    "std_lead_ms": 19.277425954519252,
+    "last_seen": 1788813738.511429
+  },
+  "Alt+V": {
+    "count": 1,
+    "mean_lead_ms": 123.988,
+    "std_lead_ms": 15.0,
+    "last_seen": 1788808281.171397
+  },
+  "Ctrl+Z": {
+    "count": 1,
+    "mean_lead_ms": 282.15,
+    "std_lead_ms": 15.0,
+    "last_seen": 1788808980.825783
+  },
+  "Shift+U": {
+    "count": 1,
+    "mean_lead_ms": 171.274,
+    "std_lead_ms": 15.0,
+    "last_seen": 1788812248.267283
+  },
+  "Shift+Space": {
+    "count": 6,
+    "mean_lead_ms": 118.08466666666665,
+    "std_lead_ms": 30.334349111563643,
+    "last_seen": 1788840595.05485
+  },
+  "Ctrl+S": {
+    "count": 1,
+    "mean_lead_ms": 241.763,
+    "std_lead_ms": 15.0,
+    "last_seen": 1788813046.77035
+  },
+  "Super+V": {
+    "count": 1,
+    "mean_lead_ms": 814.909,
+    "std_lead_ms": 15.0,
+    "last_seen": 1788813915.820711
+  },
+  "Shift+Super+S": {
+    "count": 4,
+    "mean_lead_ms": 981.681,
+    "std_lead_ms": 247.2227489016737,
+    "last_seen": 1788814382.390583
+  },
+  "Alt+Ctrl+5": {
+    "count": 2,
+    "mean_lead_ms": 1033.9915,
+    "std_lead_ms": 488.1055,
+    "last_seen": 1788841202.648566
+  },
+  "Alt+Ctrl+4": {
+    "count": 3,
+    "mean_lead_ms": 732.1216666666666,
+    "std_lead_ms": 142.43615807168564,
+    "last_seen": 1788841373.436522
+  },
+  "Ctrl+V": {
+    "count": 17,
+    "mean_lead_ms": 979.1549411764705,
+    "std_lead_ms": 658.19947823504,
+    "last_seen": 1788842014.247355
+  },
+  "Alt+Tab": {
+    "count": 1,
+    "mean_lead_ms": 136.994,
+    "std_lead_ms": 15.0,
+    "last_seen": 1788814273.273555
+  },
+  "Alt+Right": {
+    "count": 2,
+    "mean_lead_ms": 150.055,
+    "std_lead_ms": 8.075000000000003,
+    "last_seen": 1788814377.089398
+  },
+  "Alt+Left": {
+    "count": 1,
+    "mean_lead_ms": 37.17,
+    "std_lead_ms": 15.0,
+    "last_seen": 1788814376.968438
+  },
+  "Ctrl+X": {
+    "count": 1,
+    "mean_lead_ms": 1456.397,
+    "std_lead_ms": 15.0,
+    "last_seen": 1788815571.707316
+  },
+  "Alt+/": {
+    "count": 4,
+    "mean_lead_ms": 205.94975,
+    "std_lead_ms": 170.76385690241216,
+    "last_seen": 1788815984.629769
+  },
+  "Super+Right": {
+    "count": 1,
+    "mean_lead_ms": 192.381,
+    "std_lead_ms": 15.0,
+    "last_seen": 1788840362.219336
+  },
+  "Ctrl+Right": {
+    "count": 4,
+    "mean_lead_ms": 459.914,
+    "std_lead_ms": 253.26017157164688,
+    "last_seen": 1788840948.756168
+  },
+  "Ctrl+Down": {
+    "count": 1,
+    "mean_lead_ms": 1686.025,
+    "std_lead_ms": 15.0,
+    "last_seen": 1788840949.642641
+  },
+  "Ctrl+N": {
+    "count": 13,
+    "mean_lead_ms": 1241.562846153846,
+    "std_lead_ms": 738.2923255664276,
+    "last_seen": 1788841399.846633
+  },
+  "Ctrl+A": {
+    "count": 1,
+    "mean_lead_ms": 115.782,
+    "std_lead_ms": 15.0,
+    "last_seen": 1788842013.627869
+  }
+}
